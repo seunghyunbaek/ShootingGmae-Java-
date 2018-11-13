@@ -7,6 +7,7 @@ import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 import javax.swing.JPanel;
 
@@ -28,6 +29,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 	long targetTime = 1000 / FPS;
 	
 	private Player player;
+	public static ArrayList<Bullet> bullets;
 
 	// CONSTRUCTOR
 	public GamePanel() {
@@ -65,7 +67,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		int maxFrameCount = 30;
 		
 		player = new Player();
-
+		bullets = new ArrayList<Bullet>();
+		
 		// Game Loop
 		while (running) {
 			startTime = System.nanoTime(); // 1초 == 10의 -3승: 밀리 == 10의 -6승 : 마이크로 == 10의 -9승 : 나노
@@ -91,11 +94,19 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 				totalTime = 0;
 			}
 		}
-
 	}
 
 	private void gameUpdate() {
+		
 		player.update();
+		
+		for(int i = 0; i < bullets.size(); i++) {
+			boolean remove = bullets.get(i).update();
+			if(remove) {
+				bullets.remove(i);
+				i--;
+			}
+		}
 	}
 
 	private void gameRender() {
@@ -105,8 +116,13 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 
 		g.setColor(Color.WHITE);
 		g.drawString("FPS : " + averageFPS, 10, 20);
+		g.drawString("num bullets : " + bullets.size(), 10, 40);
 		
 		player.draw(g);
+		
+		for(int i = 0; i < bullets.size(); i++) {
+			bullets.get(i).draw(g);
+		}
 	}
 
 	private void gameDraw() {
@@ -116,9 +132,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		g2.dispose(); // 그래픽 컨텍스트를 제거하고 사용중인 모든 시스템 리소스를 해제함.
 	}
 	
-	public void keyTyped(KeyEvent key) {
-		
-	}
+	public void keyTyped(KeyEvent key) {}
 	
 	public void keyPressed(KeyEvent key) {
 		int keyCode = key.getKeyCode();
@@ -126,13 +140,16 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		if(keyCode == KeyEvent.VK_RIGHT) player.setRight(true);
 		if(keyCode == KeyEvent.VK_UP) player.setUp(true);
 		if(keyCode == KeyEvent.VK_DOWN) player.setDown(true);
+		if(keyCode == KeyEvent.VK_Z) player.setFiring(true);
 	}
+	
 	public void keyReleased(KeyEvent key) {
 		int keyCode = key.getKeyCode();
 		if(keyCode == KeyEvent.VK_LEFT) player.setLeft(false);
 		if(keyCode == KeyEvent.VK_RIGHT) player.setRight(false);
 		if(keyCode == KeyEvent.VK_UP) player.setUp(false);
 		if(keyCode == KeyEvent.VK_DOWN) player.setDown(false);
+		if(keyCode == KeyEvent.VK_Z) player.setFiring(false);
 	}
 
 }
