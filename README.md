@@ -1,4 +1,3 @@
 # ShootingGmae-Java-
----
 
 First Game
