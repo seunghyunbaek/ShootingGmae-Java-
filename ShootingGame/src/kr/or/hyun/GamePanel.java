@@ -30,6 +30,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 	
 	private Player player;
 	public static ArrayList<Bullet> bullets;
+	public static ArrayList<Enemy> enemies;
 
 	// CONSTRUCTOR
 	public GamePanel() {
@@ -68,6 +69,10 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		
 		player = new Player();
 		bullets = new ArrayList<Bullet>();
+		enemies = new ArrayList<Enemy>();
+		for(int i = 0; i < 5; i++) {
+			enemies.add(new Enemy(1, 1));
+		}
 		
 		// Game Loop
 		while (running) {
@@ -98,8 +103,10 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 
 	private void gameUpdate() {
 		
+		// player update
 		player.update();
 		
+		// bullet update
 		for(int i = 0; i < bullets.size(); i++) {
 			boolean remove = bullets.get(i).update();
 			if(remove) {
@@ -107,6 +114,47 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 				i--;
 			}
 		}
+		
+		// enemy update
+		for(int i = 0; i < enemies.size(); i++) {
+			enemies.get(i).update();
+		}
+		
+		// bullet-enemy collision
+		for(int i = 0; i < bullets.size(); i++) {
+			
+			Bullet b = bullets.get(i);
+			double bx = b.getx();
+			double by = b.gety();
+			double br = b.getr();
+			
+			for(int j = 0; j < enemies.size(); j++) {
+				Enemy e = enemies.get(j);
+				double ex = e.getx();
+				double ey = e.gety();
+				double er = e.getr();
+				
+				double dx = bx - ex;
+				double dy = by - ey;
+				double dist = Math.sqrt(dx*dx - dy*dy);
+				
+				if(dist <= br + er) {
+					e.hit();
+					bullets.remove(i);
+					i--;
+					break;
+				}
+			}
+		}
+		
+		// check dead enemies
+		for(int i=0; i < enemies.size(); i++) {
+			if(enemies.get(i).isDead()) {
+				enemies.remove(i);
+				i--;
+			}
+		}
+		
 	}
 
 	private void gameRender() {
@@ -118,10 +166,17 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		g.drawString("FPS : " + averageFPS, 10, 20);
 		g.drawString("num bullets : " + bullets.size(), 10, 40);
 		
+		// draw player
 		player.draw(g);
 		
+		// draw bullets
 		for(int i = 0; i < bullets.size(); i++) {
 			bullets.get(i).draw(g);
+		}
+		
+		// draw enemies
+		for(int i = 0; i < enemies.size(); i++) {
+			enemies.get(i).draw(g);
 		}
 	}
 
