@@ -4,15 +4,17 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 
 import javax.swing.JPanel;
 
-public class GamePanel extends JPanel implements Runnable {
+public class GamePanel extends JPanel implements Runnable, KeyListener {
 
 	// FIELDS
-	private static int WIDTH = 400;
-	private static int HEIGHT = 400;
+	public static int WIDTH = 400;
+	public static int HEIGHT = 400;
 
 	private BufferedImage image;
 	private Graphics2D g;
@@ -24,6 +26,8 @@ public class GamePanel extends JPanel implements Runnable {
 	private double averageFPS;
 
 	long targetTime = 1000 / FPS;
+	
+	private Player player;
 
 	// CONSTRUCTOR
 	public GamePanel() {
@@ -41,6 +45,8 @@ public class GamePanel extends JPanel implements Runnable {
 			thread = new Thread(this);
 			thread.start();
 		}
+		
+		addKeyListener(this);
 	}
 
 	public void run() {
@@ -57,6 +63,8 @@ public class GamePanel extends JPanel implements Runnable {
 
 		int frameCount = 0;
 		int maxFrameCount = 30;
+		
+		player = new Player();
 
 		// Game Loop
 		while (running) {
@@ -87,7 +95,7 @@ public class GamePanel extends JPanel implements Runnable {
 	}
 
 	private void gameUpdate() {
-
+		player.update();
 	}
 
 	private void gameRender() {
@@ -97,7 +105,8 @@ public class GamePanel extends JPanel implements Runnable {
 
 		g.setColor(Color.WHITE);
 		g.drawString("FPS : " + averageFPS, 10, 20);
-
+		
+		player.draw(g);
 	}
 
 	private void gameDraw() {
@@ -105,6 +114,25 @@ public class GamePanel extends JPanel implements Runnable {
 
 		g2.drawImage(image, 0, 0, null); // Render의 요소들을 모두 그린다.
 		g2.dispose(); // 그래픽 컨텍스트를 제거하고 사용중인 모든 시스템 리소스를 해제함.
+	}
+	
+	public void keyTyped(KeyEvent key) {
+		
+	}
+	
+	public void keyPressed(KeyEvent key) {
+		int keyCode = key.getKeyCode();
+		if(keyCode == KeyEvent.VK_LEFT) player.setLeft(true);
+		if(keyCode == KeyEvent.VK_RIGHT) player.setRight(true);
+		if(keyCode == KeyEvent.VK_UP) player.setUp(true);
+		if(keyCode == KeyEvent.VK_DOWN) player.setDown(true);
+	}
+	public void keyReleased(KeyEvent key) {
+		int keyCode = key.getKeyCode();
+		if(keyCode == KeyEvent.VK_LEFT) player.setLeft(false);
+		if(keyCode == KeyEvent.VK_RIGHT) player.setRight(false);
+		if(keyCode == KeyEvent.VK_UP) player.setUp(false);
+		if(keyCode == KeyEvent.VK_DOWN) player.setDown(false);
 	}
 
 }
