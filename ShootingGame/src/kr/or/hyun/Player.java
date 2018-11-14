@@ -21,13 +21,18 @@ public class Player {
 	private boolean down;
 	
 	private int lives;
-	
+
 	private Color color1;
 	private Color color2;
 	
 	private boolean firing;
 	private long firingTimer;
 	private long firingDelay;
+	
+	private boolean recovering;
+	private long recoveryTimer;
+	
+	private int score;
 	
 	// CONSTRUCTOR
 	public Player() {
@@ -47,19 +52,36 @@ public class Player {
 		firing = false;
 		firingTimer = System.nanoTime();
 		firingDelay = 200;
+		
+		recovering = false;
+		recoveryTimer = 0;
+		
+		score = 0;
 	}
 	
 	// FUNCTIONS
 	public int getx() { return x; }
 	public int gety() { return y; }
 	public int getr() { return r; }
+	
+	public int getScore() { return score; } 
 	public int getLives() { return lives; }
+	
+	public boolean isRecovering() { return recovering; }
 	
 	public void setLeft(boolean b) { left = b; }
 	public void setRight(boolean b) { right = b; }
 	public void setUp(boolean b) { up = b; }
 	public void setDown(boolean b) { down = b; }
 	public void setFiring(boolean b) { firing = b; }
+	
+	public void addScore(int i) { score += i; }
+	
+	public void loseLife() {
+		lives--;
+		recovering = true;
+		recoveryTimer = System.nanoTime();
+	}
 	
 	public void update() {
 		if(left) {
@@ -93,16 +115,32 @@ public class Player {
 				firingTimer = System.nanoTime();
 			}
 		}
+		
+		long elapsed = (System.nanoTime() - recoveryTimer) / 1000000;
+		if(elapsed > 2000) {
+			recovering = false;
+			recoveryTimer = 0;
+		}
 	}
 	
 	public void draw(Graphics2D g) {
-		g.setColor(color1);
-		g.fillOval(x-r, y-r, 2*r, 2*r);
-
-		g.setStroke(new BasicStroke(3));
-		g.setColor(color1.darker());
-		g.drawOval(x-r, y-r, 2*r, 2*r);
-		g.setStroke(new BasicStroke(1));
-		
+		if(recovering) {
+			g.setColor(color2);
+			g.fillOval(x-r, y-r, 2*r, 2*r);
+			
+			g.setStroke(new BasicStroke(3));
+			g.setColor(color2.darker());
+			g.drawOval(x-r, y-r, 2*r, 2*r);
+			g.setStroke(new BasicStroke(1));
+		}
+		else {			
+			g.setColor(color1);
+			g.fillOval(x-r, y-r, 2*r, 2*r);
+			
+			g.setStroke(new BasicStroke(3));
+			g.setColor(color1.darker());
+			g.drawOval(x-r, y-r, 2*r, 2*r);
+			g.setStroke(new BasicStroke(1));
+		}
 	}
 }

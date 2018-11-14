@@ -34,8 +34,8 @@ public class Enemy {
 			color1 = Color.BLUE;
 			if(rank == 1) {
 				speed = 2;
-				r = 5;
 				health = 1;
+				r = 5;
 			}
 		}
 		
@@ -53,6 +53,9 @@ public class Enemy {
 	public double getx() { return x; }
 	public double gety() { return y; }
 	public double getr() { return r; }
+	
+	public int getType() { return type; }
+	public int getRank() { return rank; }
 	
 	public boolean isDead() {
 		return dead;
