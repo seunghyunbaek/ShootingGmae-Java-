@@ -50,6 +50,10 @@ public class Player {
 	}
 	
 	// FUNCTIONS
+	public int getx() { return x; }
+	public int gety() { return y; }
+	public int getr() { return r; }
+	public int getLives() { return lives; }
 	
 	public void setLeft(boolean b) { left = b; }
 	public void setRight(boolean b) { right = b; }
