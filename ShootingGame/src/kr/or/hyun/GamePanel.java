@@ -240,6 +240,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 				if(dist < pr+er) {
 					player.loseLife();
 				}
+				
 			}
 		}
 		
